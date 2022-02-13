@@ -25,5 +25,5 @@ async def clear(ctx, amount = 1):
         await ctx.channel.purge(limit = amount + 1)
 
 
-
+# replace run token with word 'token'
 client.run('ODg3MDk3NjQ4MzU0NTgyNTk5.YT_MEA.eQZgiZiG6Jr0BIK9YbRqDwJFtzQ')
