@@ -63,14 +63,11 @@ class Youtube(commands.Cog):
         await ctx.send('Pong!')
 
     @commands.command()
-    async def play(self, ctx, url : str):
+    async def play(self, ctx, *, url: str):
         global queue
         queue.append(url)
         voice = discord.utils.get(self.client.voice_clients, guild = ctx.guild)
         
-        if voice.is_playing():
-            await ctx.send('Song has been added to queue')
-
         if ctx.author.voice is None:
             await ctx.send('You are not connected to a voice channel')
         channel = ctx.author.voice.channel
@@ -80,10 +77,10 @@ class Youtube(commands.Cog):
             await voice.move_to(channel)
 
         async with ctx.typing():
-            player = await YTDLSource.from_url(queue[0], loop=self.client.loop)
-            voice.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+            player = await YTDLSource.from_url(queue[0], loop= self.client.loop)
+            ctx.message.guild.voice_client.play(player, after= lambda e: print('Player error: %s' % e) if e else None)
 
-        await ctx.send('**Now playing:** {}'.format(player.title))
+        await ctx.send(f'**Now playing:** {player.title}')
         del(queue[0])
 
     @commands.command()
@@ -125,7 +122,7 @@ class Youtube(commands.Cog):
         await ctx.send(f'Your queue is now `{queue}!`')
 
     @commands.command()
-    async def remove(ctx, number):
+    async def remove(self, ctx, number):
         global queue
 
         try:

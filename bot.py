@@ -32,4 +32,4 @@ for filename in os.listdir('./cogs'):
 
 
 # replace run token with word 'token' when committing
-client.run('token')
+client.run('ODg3MDk3NjQ4MzU0NTgyNTk5.YT_MEA.nP84Y85LtI-49qC-DQ9zXG8kPkw')
