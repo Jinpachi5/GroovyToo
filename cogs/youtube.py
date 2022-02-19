@@ -1,3 +1,4 @@
+from ast import Pass
 from tempfile import _TemporaryFileWrapper
 import discord
 from discord.ext import commands
@@ -50,6 +51,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
 
 queue = []
+i = 0
 activity = discord.Activity(type = discord.ActivityType.listening, name = "a song")
 class Youtube(commands.Cog):
     def __init__(self, client):
@@ -65,6 +67,7 @@ class Youtube(commands.Cog):
     @commands.command()
     async def play(self, ctx, *, url: str):
         global queue
+        global i
         queue.append(url)
         voice = discord.utils.get(self.client.voice_clients, guild = ctx.guild)
         
@@ -76,12 +79,18 @@ class Youtube(commands.Cog):
         else: 
             await voice.move_to(channel)
 
-        async with ctx.typing():
-            player = await YTDLSource.from_url(queue[0], loop= self.client.loop)
-            ctx.message.guild.voice_client.play(player, after= lambda e: print('Player error: %s' % e) if e else None)
+        while i < len(queue):
+            
+            if ctx.message.guild.voice_client.is_playing():
+                pass
+            else:
+                async with ctx.typing():
+                    player = await YTDLSource.from_url(queue[i], loop= self.client.loop)
+                    ctx.message.guild.voice_client.play(player, after= lambda e: print('Player error: %s' % e) if e else None)
 
-        await ctx.send(f'**Now playing:** {player.title}')
-        del(queue[0])
+                await ctx.send(f'**Now playing:** {player.title}')
+                i += 1
+
 
     @commands.command()
     async def leave(self, ctx):
@@ -113,9 +122,11 @@ class Youtube(commands.Cog):
 
     @commands.command()
     async def stop(self, ctx):
+        global i
         #voice = voiceClient
         voice = discord.utils.get(self.client.voice_clients, guild = ctx.guild)
         voice.stop()
+        i= 0
 
     @commands.command()
     async def queue(self, ctx):
